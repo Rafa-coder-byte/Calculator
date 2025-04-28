@@ -1,4 +1,3 @@
-
 type Operator = '+' | '-' | '*' | '/' | '^';
 type Parenthesis = '(' | ')';
 export type Token = number | Operator | Parenthesis;
@@ -6,23 +5,56 @@ export type Token = number | Operator | Parenthesis;
 export class Calculator{
 
 
-    static tokenize(expression : string): Token[] {
-        const regex = /(\-?\d+\.?\d*)|([+\-*/^()])|\s+/g;
-        var tokens: Token[] = []
-        let match;
-
-        while((match = regex.exec(expression)) !== null){
-            const [_, numero, operador] = match
-        
-            if(numero){
-                tokens.push(parseFloat(numero));
+    static tokenize(expression: string): Token[] {
+        const tokens: Token[] = [];
+        let i = 0;
+    
+        while (i < expression.length) {
+            const char = expression[i];
+    
+            // Saltar espacios
+            if (/\s/.test(char)) {
+                i++;
+                continue;
             }
-            else if (operador && operador.trim() !== '') {
-                tokens.push(operador as Operator | Parenthesis);
+    
+            // Números (incluyendo negativos)
+            if (char === '-' && (
+                i === 0 || // Al inicio de la expresión
+                /[+\-*/^(\s]/.test(expression[i - 1]) // O después de un operador o paréntesis de apertura
+            )) {
+                // Buscar el número negativo completo
+                let numStr = '-';
+                i++;
+                while (i < expression.length && /[\d.]/.test(expression[i])) {
+                    numStr += expression[i];
+                    i++;
+                }
+                tokens.push(parseFloat(numStr));
+                continue;
             }
-            console.log(match)
+    
+            // Números positivos
+            if (/\d/.test(char)) {
+                let numStr = '';
+                while (i < expression.length && /[\d.]/.test(expression[i])) {
+                    numStr += expression[i];
+                    i++;
+                }
+                tokens.push(parseFloat(numStr));
+                continue;
+            }
+    
+            // Operadores y paréntesis
+            if (/[+\-*/^()]/.test(char)) {
+                tokens.push(char as Operator | Parenthesis);
+                i++;
+                continue;
+            }
+    
+            throw new Error(`Carácter no válido: ${char}`);
         }
-
+    
         return tokens;
     }
 
@@ -83,6 +115,7 @@ export class Calculator{
     return output;
     }
 
+
     static evaluatePostfix(postfixExpression: Token[]): string{
      var result: number = 0
      
@@ -101,7 +134,11 @@ export class Calculator{
                  case '+': result = leftOperand + rightOperand; break;
                  case '-': result = leftOperand - rightOperand; break;
                  case '*': result = leftOperand * rightOperand; break;
-                 case '/': result = leftOperand / rightOperand; break;
+                 case '/': if (rightOperand === 0) {
+                                throw new Error("Error: División por cero");
+                            }
+                            result = leftOperand / rightOperand;
+                            break;
                  case '^': result = leftOperand ** rightOperand; break;
                  default: throw new Error(`Unsupported operator: ${token}`);
              }

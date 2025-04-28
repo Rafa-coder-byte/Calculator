@@ -72,8 +72,6 @@ const  HomeScreen = () => {
       }
 
      const minusOperation = () => {
-      if(!expression.length)
-         return
       
       newExpression = RepeatedSigns.eviteRepeatedSigns(expression, '-')
       setExpression(newExpression)
