@@ -27,7 +27,6 @@ const  HomeScreen = () => {
 
      const equalOperation = () => {
       try {
-      
          let finalExpression = expression.replace(/÷/g, '/')
              finalExpression = finalExpression.replace(/x/g, '*')
 
@@ -42,7 +41,11 @@ const  HomeScreen = () => {
           setResult(Calculator.evaluatePostfix(postfix))
       }
       catch (error){
-         alert('Error: ${error.message}');
+         if (error instanceof Error) {
+            alert(`Error: ${error.message}`);
+          } else {
+            alert(`Error desconocido`);
+          }
       }
 
    }

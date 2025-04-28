@@ -135,7 +135,7 @@ export class Calculator{
                  case '-': result = leftOperand - rightOperand; break;
                  case '*': result = leftOperand * rightOperand; break;
                  case '/': if (rightOperand === 0) {
-                                throw new Error("Error: División por cero");
+                                throw new Error("División por cero");
                             }
                             result = leftOperand / rightOperand;
                             break;
